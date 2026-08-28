@@ -1,8 +1,9 @@
-import 'package:app_music/features/home/presentation/widget/bottom_nav.dart';
-import 'package:app_music/features/home/presentation/widget/continue_listening.dart';
-import 'package:app_music/features/home/presentation/widget/home_header.dart';
-import 'package:app_music/features/home/presentation/widget/recent_listening.dart';
-import 'package:app_music/features/home/presentation/widget/top_mixes.dart';
+
+import 'package:app_music/features/main_page/home/presentation/widget/bottom_nav.dart';
+import 'package:app_music/features/main_page/home/presentation/widget/continue_listening.dart';
+import 'package:app_music/features/main_page/home/presentation/widget/home_header.dart';
+import 'package:app_music/features/main_page/home/presentation/widget/recent_listening.dart';
+import 'package:app_music/features/main_page/home/presentation/widget/top_mixes.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -97,10 +98,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      bottomNavigationBar: HomeBottomNav(
-        currentIndex: selectedIndex,
-        onChanged: onNavigationChanged,
-      ),
+      // bottomNavigationBar: HomeBottomNav(
+      //   currentIndex: selectedIndex,
+      //   onChanged: onNavigationChanged,
+      // ),
     );
   }
 }

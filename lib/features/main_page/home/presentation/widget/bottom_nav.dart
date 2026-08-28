@@ -75,7 +75,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected
-        ? AppColors.primary
+        ? AppColors.primaryDark
         : Colors.white70;
 
     return GestureDetector(
@@ -97,7 +97,7 @@ class _NavItem extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 9,
+                fontSize: 12,
                 color: color,
                 fontWeight: selected
                     ? FontWeight.w600

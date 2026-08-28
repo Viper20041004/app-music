@@ -1,4 +1,5 @@
-import 'package:app_music/features/home/presentation/page/home_page.dart';
+
+import 'package:app_music/features/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 
@@ -9,9 +10,9 @@ class MusicApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Vibe Music',
+      title: 'Musium',
       theme: AppTheme.darkTheme,
-      home: const HomePage(),
+      home: const SplashPage(),
     );
   }
 }
