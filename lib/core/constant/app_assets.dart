@@ -54,5 +54,23 @@ class AppAssets {
   static const String genImage7 = 'assets/images/gen_image7.png';
   static const String genImage8 = 'assets/images/gen_image8.png';
   static const String genImage9 = 'assets/images/gen_image9.png';
+  static const String libraryImage1 = 'assets/images/library_image1.png';
+  static const String libraryImage2 = 'assets/images/library_image2.png';
+  static const String libraryImage3 = 'assets/images/library_image3.png';
+  static const String libraryImage4 = 'assets/images/library_image4.png';
+  static const String artistImage1 = 'assets/images/artist1.png';
+  static const String artistImage2 = 'assets/images/artist2.png';
+  static const String artistImage3 = 'assets/images/artist3.png';
+  static const String artistImage4 = 'assets/images/artist4.png';
+  static const String artistImage5 = 'assets/images/artist5.png';
+  static const String artistImage6 = 'assets/images/artist6.png';
+  static const String artistImage7 = 'assets/images/sontung.png';
+  static const String album1 = 'assets/images/album1.png';
+  static const String album2 = 'assets/images/album2.png';
+  static const String album3 = 'assets/images/album3.png';
+  static const String album4 = 'assets/images/album4.png';
+  static const String album5 = 'assets/images/album5.png';
+  static const String album6 = 'assets/images/album6.png';
+  static const String album7 = 'assets/images/album7.png';
 
 }
