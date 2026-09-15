@@ -72,5 +72,9 @@ class AppAssets {
   static const String album5 = 'assets/images/album5.png';
   static const String album6 = 'assets/images/album6.png';
   static const String album7 = 'assets/images/album7.png';
+  static const String welcomeImage = 'assets/images/welcome.png';
+  static const String iconGoogle = 'assets/images/google_icon.png';
+  static const String iconFacebook = 'assets/images/facebook_icon.png';
+  static const String iconApple = 'assets/images/apple_icon.png';
 
 }

@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
-import 'package:app_music/features/main_page/home/presentation/page/home_page.dart';
-import 'package:app_music/features/main_page/main_screen.dart';
+import 'package:app_music/features/splash/wellcome_screen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -22,12 +21,10 @@ class _SplashPageState extends State<SplashPage> {
     Timer(
       const Duration(seconds: 2),
           () {
-        if (!mounted) return;
-
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const MainScreen(),
+            builder: (_) => const WelcomeScreen(),
           ),
         );
       },
