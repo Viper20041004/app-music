@@ -87,7 +87,33 @@ class SignInScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               // Divider
-              const LoginDivider(),
+              Row(
+                children: const [
+                  Expanded(
+                    child: Divider(
+                      color: Colors.white24,
+                      thickness: 1,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(
+                      'or',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.white24,
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
 
               const SizedBox(height: 28),
 

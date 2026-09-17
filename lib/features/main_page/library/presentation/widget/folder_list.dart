@@ -1,4 +1,6 @@
+import 'package:app_music/core/navigation/app_navigator.dart';
 import 'package:app_music/features/main_page/library/data/folder_model.dart';
+import 'package:app_music/features/main_page/library/presentation/page/folder_detail_screen.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/folder_row.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +9,7 @@ class FoldersList extends StatelessWidget {
 
   static final folders = [
     FolderModel(
-      name: 'moods',
+      name: 'Moods',
       count: '11 playlists',
     ),
     FolderModel(
@@ -31,12 +33,13 @@ class FoldersList extends StatelessWidget {
         return FolderRow(
           folder: folder,
           onTap: () {
-            debugPrint(
-              'Selected folder: ${folder.name}',
+            AppNavigator.push(
+              context,
+              FolderDetailScreen(folder: folder),
             );
           },
         );
       }).toList(),
     );
   }
-}
+}

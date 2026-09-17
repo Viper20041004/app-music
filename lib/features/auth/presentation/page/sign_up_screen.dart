@@ -1,3 +1,5 @@
+import 'package:app_music/features/main_page/home/presentation/page/home_page.dart';
+import 'package:app_music/features/main_page/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
@@ -70,7 +72,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // Title
               const Center(
                 child: Text(
-                  'Create your Account',
+                  'Login your account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -175,7 +177,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: Xử lý Đăng ký tài khoản
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(
+                            builder: (_) => const MainScreen()
+                        )
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryDark,
@@ -186,7 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   child: const Text(
-                    'Sign up',
+                    'Log in',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
