@@ -1,5 +1,8 @@
 import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
+import 'package:app_music/core/navigation/app_navigator.dart';
+import 'package:app_music/features/main_page/library/data/playlist_model.dart';
+import 'package:app_music/features/main_page/library/presentation/page/playlist_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class ContinueListening extends StatelessWidget {
@@ -47,39 +50,52 @@ class ContinueListening extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = items[index];
 
-        return Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: Image.asset(
-                  item.image,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.centerLeft,
+        return GestureDetector(
+          onTap: () {
+            AppNavigator.push(
+              context,
+              PlaylistDetailScreen(
+                playlist: PlaylistModel(
+                  title: item.title,
+                  songCount: '20 songs',
+                  imagePath: item.image,
+                  fromCategory: 'HOME',
+                  description: 'Popular hits & chill tracks for ${item.title}',
                 ),
               ),
-
-              const SizedBox(width: 8),
-
-              Expanded(
-                child: Text(
-                  item.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+            );
+          },
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset(
+                    item.image,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.centerLeft,
                   ),
                 ),
-              ),
-
-              const SizedBox(width: 5),
-            ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+              ],
+            ),
           ),
         );
       },

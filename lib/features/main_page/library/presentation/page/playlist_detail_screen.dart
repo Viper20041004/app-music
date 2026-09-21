@@ -33,6 +33,7 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   Future<void> _loadSongs() async {
     final fetched = await _songRepository.fetchSongs(
       query: widget.playlist.title,
+      quantity: 10
     );
     if (mounted) {
       setState(() {

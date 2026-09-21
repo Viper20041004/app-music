@@ -1,7 +1,9 @@
 import 'dart:math';
 
-import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
+import 'package:app_music/core/navigation/app_navigator.dart';
+import 'package:app_music/features/main_page/library/data/playlist_model.dart';
+import 'package:app_music/features/main_page/library/presentation/page/playlist_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class TopMixes extends StatelessWidget {
@@ -38,46 +40,66 @@ class TopMixes extends StatelessWidget {
         itemBuilder: (context, index) {
           final mix = mixes[index];
 
-          return SizedBox(
-            width: 150,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(2),
-                          child: Image.asset(
-                            mix.image,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 8,
-                        top: 8,
-                        child: Text(
-                          mix.title,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
-                        )
-                      ),
-                    ]
-                  )
-                ),
-                ClipRRect(
-                  child: LinearProgressIndicator(
-                    value: 1,
-                    minHeight: 8,
-                    backgroundColor: Colors.white12,
-                    valueColor: AlwaysStoppedAnimation(
-                      randomColor()
-                    ),
+          return GestureDetector(
+            onTap: () {
+              AppNavigator.push(
+                context,
+                PlaylistDetailScreen(
+                  playlist: PlaylistModel(
+                    title: '${mix.title} Mix',
+                    songCount: '25 songs',
+                    imagePath: mix.image,
+                    fromCategory: 'HOME MIXES',
+                    description: 'Top trending tracks in ${mix.title}',
                   ),
                 ),
-              ],
+              );
+            },
+            child: SizedBox(
+              width: 150,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(2),
+                            child: Image.asset(
+                              mix.image,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 8,
+                          top: 8,
+                          child: Text(
+                            mix.title,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ClipRRect(
+                    child: LinearProgressIndicator(
+                      value: 1,
+                      minHeight: 8,
+                      backgroundColor: Colors.white12,
+                      valueColor: AlwaysStoppedAnimation(
+                        randomColor(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
