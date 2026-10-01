@@ -1,4 +1,3 @@
-import 'package:app_music/features/main_page/home/presentation/page/home_page.dart';
 import 'package:app_music/features/main_page/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_music/app/theme/app_colors.dart';

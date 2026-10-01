@@ -23,6 +23,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   final SongRepository _songRepository = SongRepository();
   List<SongModel> songs = [];
   bool isLoading = true;
+  bool _showAll = false;
+  static const int _initialSongLimit = 20;
 
   @override
   void initState() {
@@ -31,15 +33,24 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
   }
 
   Future<void> _loadSongs() async {
-    final fetched = await _songRepository.fetchSongs(
-      query: widget.playlist.title,
-      quantity: 10
-    );
-    if (mounted) {
-      setState(() {
-        songs = fetched;
-        isLoading = false;
-      });
+    setState(() {
+      isLoading = true;
+      _showAll = false;
+    });
+    try {
+      final fetched = await _songRepository.fetchSongs();
+      if (mounted) {
+        setState(() {
+          songs = fetched;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -66,6 +77,12 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
           width: 60,
           height: 60,
           fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => Container(
+            width: 60,
+            height: 60,
+            color: Colors.white12,
+            child: const Icon(Icons.music_note, color: Colors.white54),
+          ),
         ),
       );
     }
@@ -74,6 +91,12 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
       width: 60,
       height: 60,
       fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: 60,
+        height: 60,
+        color: Colors.white12,
+        child: const Icon(Icons.music_note, color: Colors.white54),
+      ),
     );
   }
 
@@ -83,6 +106,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
         (widget.playlist.fromCategory ?? 'PLAYLISTS').toUpperCase();
     final description =
         widget.playlist.description ?? 'soft, chill, dreamy, lo-fi beats';
+    final displayedSongs =
+        _showAll ? songs : songs.take(_initialSongLimit).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFF080A0B),
@@ -93,8 +118,8 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
             end: Alignment.bottomCenter,
             colors: [
               Color(0xFF073C40),
+              Color(0xFF073C40),
               Color(0xFF071A1C),
-              Color(0xFF0E0E0E),
               Color(0xFF0E0E0E),
             ],
             stops: [
@@ -200,15 +225,46 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                             color: Color(0xFF00AFC4),
                           ),
                         )
-                      else
+                      else if (songs.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.music_off_outlined,
+                                size: 48,
+                                color: Colors.white38,
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Không tìm thấy bài hát nào',
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _loadSongs,
+                                icon: const Icon(Icons.refresh, size: 18),
+                                label: const Text('Thử lại'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF00AFC4),
+                                  foregroundColor: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else ...[
                         ListView.separated(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: songs.length,
+                          itemCount: displayedSongs.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 16),
                           itemBuilder: (context, index) {
-                            final song = songs[index];
+                            final song = displayedSongs[index];
                             return GestureDetector(
                               onTap: () {
                                 AppNavigator.push(
@@ -269,6 +325,59 @@ class _PlaylistDetailScreenState extends State<PlaylistDetailScreen> {
                             );
                           },
                         ),
+                        if (songs.length > _initialSongLimit) ...[
+                          const SizedBox(height: 20),
+                          Center(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _showAll = !_showAll;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(25),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.08),
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                    color: const Color(0xFF00AFC4)
+                                        .withValues(alpha: 0.4),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _showAll
+                                          ? 'Show less'
+                                          : 'Show more (${songs.length - _initialSongLimit})',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      _showAll
+                                          ? Icons.keyboard_arrow_up
+                                          : Icons.keyboard_arrow_down,
+                                      color: const Color(0xFF00AFC4),
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
 
                       const SizedBox(height: 30),
                     ],

@@ -1,7 +1,6 @@
 import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
 import 'package:app_music/features/auth/presentation/page/sign_up_screen.dart';
-import 'package:app_music/features/auth/presentation/widget/login_divide.dart';
 import 'package:app_music/features/auth/presentation/widget/social_sign_in_button.dart';
 import 'package:flutter/material.dart';
 

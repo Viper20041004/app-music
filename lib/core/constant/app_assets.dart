@@ -76,5 +76,26 @@ class AppAssets {
   static const String iconGoogle = 'assets/images/google_icon.png';
   static const String iconFacebook = 'assets/images/facebook_icon.png';
   static const String iconApple = 'assets/images/apple_icon.png';
+  static const String banner1 = 'assets/images/banner1.png';
+  static const String banner2 = 'assets/images/banner2.png';
+  static const String banner3 = 'assets/images/banner3.png';
+  static const String banner4 = 'assets/images/banner4.png';
+  static const String banner5 = 'assets/images/banner5.png';
+
+  static const String vnImage1 = 'assets/images/vn_image1.png';
+  static const String vnImage2 = 'assets/images/vn_image2.png';
+  static const String vnImage3 = 'assets/images/vn_image3.png';
+  static const String vnImage4 = 'assets/images/vn_image4.png';
+  static const String vnImage5 = 'assets/images/vn_image5.png';
+  static const String moodImg1 = 'assets/images/mood_img1.png';
+  static const String moodImg2 = 'assets/images/mood_img2.png';
+  static const String moodImg3 = 'assets/images/mood_img3.png';
+  static const String moodImg4 = 'assets/images/mood_img4.png';
+  static const String moodImg5 = 'assets/images/mood_img5.png';
+  static const String topImg1 = 'assets/images/top_img1.png';
+  static const String topImg2 = 'assets/images/top_img2.png';
+  static const String topImg3 = 'assets/images/top_img3.png';
+  static const String topImg4 = 'assets/images/top_img4.png';
+  static const String topImg5 = 'assets/images/top_img5.png';
 
 }

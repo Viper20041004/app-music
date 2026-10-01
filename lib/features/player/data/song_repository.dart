@@ -1,158 +1,77 @@
-import 'package:app_music/core/constant/app_assets.dart';
-import 'package:app_music/core/database/database_helper.dart';
+import 'package:app_music/core/network/api_constants.dart';
 import 'package:app_music/features/main_page/library/data/song_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class SongRepository {
-  final Dio _dio = Dio();
-  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+      headers: {
+        'Accept': 'application/json',
+      },
+    ),
+  );
 
-  static const List<SongModel> fallbackSongs = [
-    SongModel(
-      id: 1,
-      title: 'grainy days',
-      artist: 'moody.',
-      album: 'Lofi Chill',
-      imagePath: AppAssets.genImage1,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      lyrics:
-          "You never look at the sky\nCause you think it's too high\nYou never look at the stars\nCause you think they're too far",
-      duration: 210,
-    ),
-    SongModel(
-      id: 2,
-      title: 'Coffee',
-      artist: 'Kainbeats',
-      album: 'Morning Coffee',
-      imagePath: AppAssets.genImage2,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-      lyrics:
-          "Morning coffee in my hand\nListening to the silent rain\nWalking through an empty street\nFinding peace in simple beats",
-      duration: 180,
-    ),
-    SongModel(
-      id: 3,
-      title: 'raindrops',
-      artist: 'rainyyxx',
-      album: 'Rainy Nights',
-      imagePath: AppAssets.genImage3,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-      lyrics:
-          "Raindrops falling on the glass\nMemories of times that pass\nSoftly playing lofi sound\nAs night falls gently all around",
-      duration: 240,
-    ),
-    SongModel(
-      id: 4,
-      title: 'Tokyo',
-      artist: 'SmYang',
-      album: 'City Lights',
-      imagePath: AppAssets.genImage4,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-      lyrics:
-          "Midnight lights in Tokyo\nNeon signs begin to glow\nSilent whispers in the wind\nWhere new stories will begin",
-      duration: 205,
-    ),
-    SongModel(
-      id: 5,
-      title: 'Lullaby',
-      artist: 'iamfinenow',
-      album: 'Sleep & Relax',
-      imagePath: AppAssets.genImage5,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-      lyrics:
-          "Close your eyes and drift away\nLeave behind the busy day\nSoftest tunes will guide your sleep\nIn a dreamland calm and deep",
-      duration: 195,
-    ),
-    SongModel(
-      id: 6,
-      title: 'Hazel Eyes',
-      artist: 'moody.',
-      album: 'Lofi Chill',
-      imagePath: AppAssets.genImage6,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
-      lyrics:
-          "Looking into hazel eyes\nUnderneath the evening skies\nWarmest colors fill the view\nEvery moment spent with you",
-      duration: 225,
-    ),
-  ];
+  static const List<SongModel> fallbackSongs = [];
 
-  Future<List<SongModel>> fetchSongs({String query = 'lofi', int quantity = 6, }) async {
-    try {
-      final response = await _dio.get(
-        'https://api.jamendo.com/v3.0/tracks/',
-        queryParameters: {
-          'term': query,
-          'entity': 'song',
-          'limit': 6,
-        },
-      );
+  /// Gọi API lấy danh sách bài hát từ http://localhost:3000/songs
+  /// Tự động xử lý địa chỉ máy host (10.0.2.2) khi chạy trên Android Emulator.
+  Future<List<SongModel>> fetchSongs({String? query}) async {
+    final candidateHosts = <String>[];
+    final defaultBase = ApiConstants.defaultBaseUrl;
+    candidateHosts.add(defaultBase);
 
-      if (response.statusCode == 200 && response.data != null) {
-        final Map<String, dynamic> data =
-            response.data is Map<String, dynamic> ? response.data : {};
-        final results = data['results'] as List<dynamic>?;
-        if (results != null && results.isNotEmpty) {
-          final List<SongModel> apiSongs = [];
-          for (int i = 0; i < results.length; i++) {
-            final item = results[i];
-            final trackId = item['trackId']?.toString();
-            final trackName = item['trackName']?.toString() ?? 'Unknown Track';
-            final artistName =
-                item['artistName']?.toString() ?? 'Unknown Artist';
-            final collectionName = item['collectionName']?.toString();
-            final previewUrl = item['previewUrl']?.toString();
-            final artworkUrl = item['artworkUrl100']
-                ?.toString()
-                .replaceAll('100x100bb', '600x600bb');
-            final trackTimeMillis = item['trackTimeMillis'] as int?;
-            final durationSec = trackTimeMillis != null ? trackTimeMillis ~/ 1000 : null;
+    // Nếu default là 10.0.2.2 thì thêm localhost:3000 làm fallback (và ngược lại)
+    if (defaultBase.contains('10.0.2.2')) {
+      candidateHosts.add('http://localhost:3000');
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      candidateHosts.add('http://10.0.2.2:3000');
+    }
 
-            final fallbackAsset =
-                fallbackSongs[i % fallbackSongs.length].imagePath;
-            final defaultLyrics =
-                fallbackSongs[i % fallbackSongs.length].lyrics;
+    for (final host in candidateHosts) {
+      final endpoint = '$host/songs';
+      try {
+        debugPrint('Fetching songs from API: $endpoint');
+        final response = await _dio.get(endpoint);
 
-            if (previewUrl != null && previewUrl.isNotEmpty) {
-              final song = SongModel(
-                serverId: trackId,
-                title: trackName,
-                artist: artistName,
-                album: collectionName,
-                imagePath: fallbackAsset,
-                networkImageUrl: artworkUrl,
-                audioUrl: previewUrl,
-                lyrics: defaultLyrics,
-                duration: durationSec,
-              );
-              apiSongs.add(song);
-            }
+        if (response.statusCode == 200 && response.data != null) {
+          final dynamic rawData = response.data;
+          List<dynamic> list;
+          if (rawData is List) {
+            list = rawData;
+          } else if (rawData is Map && rawData['data'] is List) {
+            list = rawData['data'] as List;
+          } else if (rawData is Map && rawData['results'] is List) {
+            list = rawData['results'] as List;
+          } else {
+            list = [];
           }
-          if (apiSongs.isNotEmpty) {
-            // Save fetched songs to SQLite
-            await _dbHelper.insertSongs(apiSongs);
-            return apiSongs;
+
+          final List<SongModel> songs = list
+              .whereType<Map<String, dynamic>>()
+              .map((item) => SongModel.fromJson(item, baseUrl: host))
+              .toList();
+
+          debugPrint('Successfully fetched ${songs.length} songs from $endpoint');
+
+          if (query != null && query.trim().isNotEmpty) {
+            final q = query.toLowerCase().trim();
+            return songs.where((s) {
+              return s.title.toLowerCase().contains(q) ||
+                  s.artist.toLowerCase().contains(q);
+            }).toList();
           }
+
+          return songs;
         }
+      } catch (e) {
+        debugPrint('Error fetching songs from $endpoint: $e');
       }
-    } catch (e) {
-      debugPrint('SongRepository fetch error: $e');
     }
 
-    // Try fetching from local SQLite DB first
-    try {
-      final dbSongs = await _dbHelper.getAllSongs();
-      if (dbSongs.isNotEmpty) {
-        return dbSongs;
-      }
-
-      // Seed fallback songs to DB if empty
-      await _dbHelper.insertSongs(fallbackSongs);
-      return fallbackSongs;
-    } catch (e) {
-      debugPrint('SQLite fetch error: $e');
-    }
-
+    debugPrint('Fallback to default sample songs because API request failed');
     return fallbackSongs;
   }
 }

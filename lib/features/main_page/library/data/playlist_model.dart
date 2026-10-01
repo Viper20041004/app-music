@@ -6,6 +6,7 @@ class PlaylistModel {
   final String? description;
   final String? fromCategory;
   final String? createdAt;
+  final String? searchQuery;
 
   const PlaylistModel({
     this.id,
@@ -15,6 +16,7 @@ class PlaylistModel {
     this.description,
     this.fromCategory,
     this.createdAt,
+    this.searchQuery,
   });
 
   Map<String, dynamic> toMap() {
@@ -48,6 +50,7 @@ class PlaylistModel {
     String? description,
     String? fromCategory,
     String? createdAt,
+    String? searchQuery,
   }) {
     return PlaylistModel(
       id: id ?? this.id,
@@ -57,6 +60,7 @@ class PlaylistModel {
       description: description ?? this.description,
       fromCategory: fromCategory ?? this.fromCategory,
       createdAt: createdAt ?? this.createdAt,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 }

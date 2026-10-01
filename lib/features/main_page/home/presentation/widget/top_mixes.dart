@@ -1,40 +1,22 @@
-import 'dart:math';
-
-import 'package:app_music/core/constant/app_assets.dart';
 import 'package:app_music/core/navigation/app_navigator.dart';
 import 'package:app_music/features/main_page/library/data/playlist_model.dart';
+import 'package:app_music/features/main_page/home/data/mix_item.dart';
 import 'package:app_music/features/main_page/library/presentation/page/playlist_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class TopMixes extends StatelessWidget {
-  const TopMixes({super.key});
+  final List<MixItem> mixes;
+  const TopMixes({super.key, required this.mixes});
 
-  static const mixes = [
-    _MixItem(
-      title: 'US UK',
-      image: AppAssets.usUkImage,
-      progress: 0.75,
-    ),
-    _MixItem(
-      title: 'KPOP',
-      image: AppAssets.kpopImage,
-      progress: 0.55,
-    ),
-    _MixItem(
-      title: 'Lofi chill',
-      image: AppAssets.lofiImage,
-      progress: 0.4,
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 155,
+      height: 215,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: mixes.length,
-        separatorBuilder: (_, __) {
+        separatorBuilder: (_, _) {
           return const SizedBox(width: 14);
         },
         itemBuilder: (context, index) {
@@ -46,56 +28,54 @@ class TopMixes extends StatelessWidget {
                 context,
                 PlaylistDetailScreen(
                   playlist: PlaylistModel(
-                    title: '${mix.title} Mix',
-                    songCount: '25 songs',
+                    title: mix.title,
+                    songCount: '50 songs',
                     imagePath: mix.image,
-                    fromCategory: 'HOME MIXES',
-                    description: 'Top trending tracks in ${mix.title}',
+                    fromCategory: 'ALL ABOUT VIET MUSIC',
+                    description: mix.subtitle,
+                    searchQuery: mix.searchQuery ?? mix.title,
                   ),
                 ),
               );
             },
             child: SizedBox(
-              width: 150,
+              width: 145,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(2),
-                            child: Image.asset(
-                              mix.image,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: 8,
-                          top: 8,
-                          child: Text(
-                            mix.title,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Image.asset(
+                        mix.image,
+                        width: 145,
+                        height: 145,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  ClipRRect(
-                    child: LinearProgressIndicator(
-                      value: 1,
-                      minHeight: 8,
-                      backgroundColor: Colors.white12,
-                      valueColor: AlwaysStoppedAnimation(
-                        randomColor(),
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    mix.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    mix.subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFFA7A7A7),
+                      height: 1.25,
                     ),
                   ),
                 ],
@@ -106,27 +86,4 @@ class TopMixes extends StatelessWidget {
       ),
     );
   }
-
-  Color randomColor() {
-    final random = Random();
-
-    return Color.fromARGB(
-      255,
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-    );
-  }
-}
-
-class _MixItem {
-  final String title;
-  final String image;
-  final double progress;
-
-  const _MixItem({
-    required this.title,
-    required this.image,
-    required this.progress,
-  });
 }
