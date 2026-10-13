@@ -3,16 +3,22 @@ import 'package:app_music/features/main_page/library/data/library_search_item.da
 
 class SearchRecentlyItem extends StatelessWidget {
   final LibrarySearchItem item;
+  final VoidCallback? onTap;
 
   const SearchRecentlyItem({
+    super.key,
     required this.item,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
-      child: Row(
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
@@ -61,7 +67,8 @@ class SearchRecentlyItem extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 

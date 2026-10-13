@@ -21,13 +21,13 @@ class ExploreSection extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
         GridView.builder(
           shrinkWrap: true,
@@ -36,13 +36,14 @@ class ExploreSection extends StatelessWidget {
           gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 15,
-            crossAxisSpacing: 20,
-            childAspectRatio: 1.7,
+            mainAxisSpacing: 14,
+            crossAxisSpacing: 14,
+            childAspectRatio: 1.85,
           ),
           itemBuilder: (context, index) {
             return ExploreCard(
               item: items[index],
+              category: title,
             );
           },
         ),

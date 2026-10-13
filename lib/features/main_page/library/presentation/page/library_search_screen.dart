@@ -1,5 +1,7 @@
 import 'package:app_music/app/theme/app_colors.dart';
 import 'package:app_music/core/constant/app_assets.dart';
+import 'package:app_music/core/navigation/app_navigator.dart';
+import 'package:app_music/features/main_page/explore/presentation/page/artist_detail_screen.dart';
 import 'package:app_music/features/main_page/library/data/library_search_item.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/search_bar_widget.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/search_recently.dart';
@@ -155,8 +157,25 @@ class _LibrarySearchScreenState extends State<LibrarySearchScreen> {
                       )
                     else
                       ...filteredItems.map(
-                            (item) => SearchRecentlyItem(
+                        (item) => SearchRecentlyItem(
                           item: item,
+                          onTap: () {
+                            if (item.subtitle.isEmpty ||
+                                item.title.toLowerCase().contains('conan') ||
+                                item.title.toLowerCase().contains('keshi') ||
+                                item.title.toLowerCase().contains('sơn tùng')) {
+                              AppNavigator.push(
+                                context,
+                                ArtistDetailScreen(
+                                  name: item.title,
+                                  avatarUrl: item.image,
+                                  bannerUrl: item.title.toLowerCase().contains('sơn tùng')
+                                      ? AppAssets.sontungBanner
+                                      : null,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                   ],

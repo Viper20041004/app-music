@@ -1,5 +1,7 @@
 
 import 'package:app_music/core/constant/app_assets.dart';
+import 'package:app_music/core/navigation/app_navigator.dart';
+import 'package:app_music/features/main_page/explore/presentation/page/artist_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class ArtistList extends StatelessWidget {
@@ -44,11 +46,19 @@ class ArtistList extends StatelessWidget {
         const SizedBox(height: 18),
 
         ...artists.map(
-              (artist) => _ArtistItem(
+          (artist) => _ArtistItem(
             artist: artist,
             onTap: () {
-              debugPrint(
-                'Selected artist: ${artist.name}',
+              AppNavigator.push(
+                context,
+                ArtistDetailScreen(
+                  name: artist.name,
+                  avatarUrl: artist.image,
+                  bannerUrl: artist.name.toLowerCase().contains('sơn tùng') ||
+                          artist.name.toLowerCase().contains('mtp')
+                      ? AppAssets.sontungBanner
+                      : null,
+                ),
               );
             },
           ),

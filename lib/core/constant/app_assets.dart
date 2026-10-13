@@ -65,6 +65,7 @@ class AppAssets {
   static const String artistImage5 = 'assets/images/artist5.png';
   static const String artistImage6 = 'assets/images/artist6.png';
   static const String artistImage7 = 'assets/images/sontung.png';
+  static const String sontungBanner = 'assets/images/sontung_banner.png';
   static const String album1 = 'assets/images/album1.png';
   static const String album2 = 'assets/images/album2.png';
   static const String album3 = 'assets/images/album3.png';
@@ -98,4 +99,34 @@ class AppAssets {
   static const String topImg4 = 'assets/images/top_img4.png';
   static const String topImg5 = 'assets/images/top_img5.png';
 
+  static const String boleroImage = 'assets/images/bolero.png';
+  static const String sadImage = 'assets/images/sad.png';
+  static const String chillOutImage = 'assets/images/chill_out.png';
+  static const String cpopImage = 'assets/images/cpop.png';
+  static const String tikTokImage = 'assets/images/tik_tok.png';
+  static const String vpopImage = 'assets/images/vpop.png';
+  static const String vrapImage = 'assets/images/vrap.png';
+  static const String relaxImage = 'assets/images/relax.png';
+  static const String remixImage = 'assets/images/remix.png';
+  static const String popImage = 'assets/images/pop.png';
+
+  static const String hitVietImage = 'assets/images/hit_viet.png';
+  static const String nhacNheImage = 'assets/images/nhac_nhe.png';
+  static const String nhacTreImage = 'assets/images/nhac_tre.png';
+  static const String tiktok2Image = 'assets/images/tiktok2.png';
+  static const String topSongBray = 'assets/images/top_song_bray.png';
+  static const String topSongDen = 'assets/images/top_song_den.png';
+  static const String topSongHieuThu2 = 'assets/images/top_song_hieu_thu2.png';
+  static const String topSongJustatee = 'assets/images/top_song_justatee.png';
+  static const String topSongMCK = 'assets/images/top_song_mck.png';
+  static const String topSongObito = 'assets/images/top_song_obito.png';
+  static const String topSongTlinh = 'assets/images/top_song_tlinh.png';
+  static const String topSongDangrangto = 'assets/images/top_song_dangrangto.png';
+  static const String topSongEmXinh = 'assets/images/top_song_em_xinh.png';
+
+  static const String balladHoiUc = 'assets/images/ballad_hoi_uc_8x_9x.png';
+  static const String balladAuMy = 'assets/images/ballad_au_my_8x_9x.png';
+  static const String balladAi2026 = 'assets/images/ballad_ai_2026.png';
+  static const String balladVpop = 'assets/images/ballad_vpop_2010_2015.png';
+  static const String balladBuonThatTinh = 'assets/images/ballad_buon_that_tinh.png';
 }
