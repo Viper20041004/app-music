@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 class SongRepository {
   final Dio _dio = Dio(
     BaseOptions(
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
       headers: {
         'Accept': 'application/json',
       },
@@ -16,53 +16,60 @@ class SongRepository {
 
   static const List<SongModel> fallbackSongs = [];
 
-  /// Gọi API lấy danh sách bài hát từ http://localhost:3000/songs
-  /// Tự động xử lý địa chỉ máy host (10.0.2.2) khi chạy trên Android Emulator.
+  /// Gọi API lấy danh sách bài hát hoặc tìm kiếm bài hát theo từ khóa query:
+  /// - Nếu có query (ví dụ: 'em'): gọi https://musium-backend.onrender.com/songs/search?q=em
+  /// - Nếu không có query: gọi https://musium-backend.onrender.com/songs
   Future<List<SongModel>> fetchSongs({String? query}) async {
     final candidateHosts = <String>[];
     final defaultBase = ApiConstants.defaultBaseUrl;
     candidateHosts.add(defaultBase);
 
-    // Nếu default là 10.0.2.2 thì thêm localhost:3000 làm fallback (và ngược lại)
+    // Thêm fallback local nếu cấu hình đang chạy ở localhost
     if (defaultBase.contains('10.0.2.2')) {
       candidateHosts.add('http://localhost:3000');
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
+    } else if (defaultTargetPlatform == TargetPlatform.android && defaultBase.contains('localhost')) {
       candidateHosts.add('http://10.0.2.2:3000');
     }
 
+    final hasQuery = query != null && query.trim().isNotEmpty;
+    final cleanQuery = query?.trim();
+
     for (final host in candidateHosts) {
-      final endpoint = '$host/songs';
+      final endpoint = hasQuery ? '$host/songs/search' : '$host/songs';
+      final queryParams = hasQuery ? {'q': cleanQuery} : null;
+
       try {
-        debugPrint('Fetching songs from API: $endpoint');
-        final response = await _dio.get(endpoint);
+        debugPrint('SongRepository: Fetching songs from $endpoint (params: $queryParams)');
+        final response = await _dio.get(
+          endpoint,
+          queryParameters: queryParams,
+        );
 
         if (response.statusCode == 200 && response.data != null) {
           final dynamic rawData = response.data;
-          List<dynamic> list;
+          List<dynamic> list = [];
+
           if (rawData is List) {
             list = rawData;
-          } else if (rawData is Map && rawData['data'] is List) {
-            list = rawData['data'] as List;
-          } else if (rawData is Map && rawData['results'] is List) {
-            list = rawData['results'] as List;
-          } else {
-            list = [];
+          } else if (rawData is Map) {
+            final dataField = rawData['data'];
+            if (dataField is List) {
+              list = dataField;
+            } else if (dataField is Map && dataField['songs'] is List) {
+              list = dataField['songs'] as List;
+            } else if (rawData['songs'] is List) {
+              list = rawData['songs'] as List;
+            } else if (rawData['results'] is List) {
+              list = rawData['results'] as List;
+            }
           }
 
           final List<SongModel> songs = list
-              .whereType<Map<String, dynamic>>()
-              .map((item) => SongModel.fromJson(item, baseUrl: host))
+              .whereType<Map>()
+              .map((item) => SongModel.fromJson(Map<String, dynamic>.from(item), baseUrl: host))
               .toList();
 
           debugPrint('Successfully fetched ${songs.length} songs from $endpoint');
-
-          if (query != null && query.trim().isNotEmpty) {
-            final q = query.toLowerCase().trim();
-            return songs.where((s) {
-              return s.title.toLowerCase().contains(q) ||
-                  s.artist.toLowerCase().contains(q);
-            }).toList();
-          }
 
           return songs;
         }
@@ -73,5 +80,10 @@ class SongRepository {
 
     debugPrint('Fallback to default sample songs because API request failed');
     return fallbackSongs;
+  }
+
+  /// Tìm kiếm bài hát theo từ khóa query qua endpoint /songs/search?q=...
+  Future<List<SongModel>> searchSongs(String query) async {
+    return fetchSongs(query: query);
   }
 }

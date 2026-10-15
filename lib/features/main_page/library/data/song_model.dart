@@ -62,6 +62,9 @@ class SongModel {
 
     // Parse imageUrl: format may be /uploads/... or http://...
     String? netImg = json['imageUrl']?.toString() ?? json['network_image_url']?.toString();
+    if ((netImg == null || netImg.isEmpty) && json['artist'] is Map) {
+      netImg = json['artist']['imageUrl']?.toString() ?? json['artist']['image_url']?.toString();
+    }
     if (netImg != null && netImg.isNotEmpty) {
       if (!netImg.startsWith('http://') && !netImg.startsWith('https://') && !netImg.startsWith('assets/')) {
         if (!netImg.startsWith('/')) {

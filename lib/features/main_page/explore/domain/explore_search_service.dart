@@ -8,15 +8,15 @@ import 'package:flutter/foundation.dart';
 class ExploreSearchService {
   final Dio _dio = Dio(
     BaseOptions(
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
       headers: {
         'Accept': 'application/json',
       },
     ),
   );
 
-  /// Gọi API search http://localhost:3000/songs/search?q=...
+  /// Gọi API search https://musium-backend.onrender.com/songs/search?q=...
   /// Trả về ExploreSearchResult chứa songs, artists, albums.
   Future<ExploreSearchResult> search(String query) async {
     final cleanQuery = query.trim();
@@ -28,10 +28,9 @@ class ExploreSearchService {
     final defaultBase = ApiConstants.defaultBaseUrl;
     candidateHosts.add(defaultBase);
 
-    // Xử lý fallback giữa localhost và 10.0.2.2 (cho Android Emulator)
     if (defaultBase.contains('10.0.2.2')) {
       candidateHosts.add('http://localhost:3000');
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
+    } else if (defaultTargetPlatform == TargetPlatform.android && defaultBase.contains('localhost')) {
       candidateHosts.add('http://10.0.2.2:3000');
     }
 
@@ -63,33 +62,29 @@ class ExploreSearchService {
             final rawAlbums = (searchData['albums'] is List) ? searchData['albums'] as List : [];
 
             final songs = rawSongs
-                .whereType<Map<String, dynamic>>()
-                .map((item) => SongModel.fromJson(item, baseUrl: host))
+                .whereType<Map>()
+                .map((item) => SongModel.fromJson(Map<String, dynamic>.from(item), baseUrl: host))
                 .toList();
 
             final artists = rawArtists
-                .whereType<Map<String, dynamic>>()
-                .map((item) => ExploreArtist.fromJson(item, baseUrl: host))
+                .whereType<Map>()
+                .map((item) => ExploreArtist.fromJson(Map<String, dynamic>.from(item), baseUrl: host))
                 .toList();
 
             final albums = rawAlbums
-                .whereType<Map<String, dynamic>>()
-                .map((item) => ExploreAlbum.fromJson(item, baseUrl: host))
+                .whereType<Map>()
+                .map((item) => ExploreAlbum.fromJson(Map<String, dynamic>.from(item), baseUrl: host))
                 .toList();
 
             debugPrint(
               'ExploreSearchService: Found ${songs.length} songs, ${artists.length} artists, ${albums.length} albums',
             );
 
-            final result = ExploreSearchResult(
+            return ExploreSearchResult(
               songs: songs,
               artists: artists,
               albums: albums,
             );
-
-            if (result.isNotEmpty) {
-              return result;
-            }
           }
         }
       } catch (e) {
