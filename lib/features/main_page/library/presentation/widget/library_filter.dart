@@ -16,6 +16,7 @@ class LibraryFilter extends StatelessWidget {
     'Playlists',
     'Artists',
     'Albums',
+    'Downloaded',
     'Podcasts',
   ];
 

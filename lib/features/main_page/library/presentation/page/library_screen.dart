@@ -1,6 +1,11 @@
 
+import 'package:app_music/core/navigation/app_navigator.dart';
+import 'package:app_music/core/storage/local_song_storage.dart';
+import 'package:app_music/features/main_page/library/data/song_model.dart';
+import 'package:app_music/features/main_page/library/presentation/page/downloaded_songs_screen.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/albums_list.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/artist_list.dart';
+import 'package:app_music/features/main_page/library/presentation/widget/downloaded_songs_list.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/folder_list.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/library_action.dart';
 import 'package:app_music/features/main_page/library/presentation/widget/library_filter.dart';
@@ -77,6 +82,26 @@ class _LibraryPageState extends State<LibraryScreen> {
                   icon: Icons.favorite_border,
                   title: 'Your Liked Songs',
                 ),
+
+                const SizedBox(height: 14),
+
+                ValueListenableBuilder<List<SongModel>>(
+                  valueListenable:
+                      LocalSongStorage.instance.downloadedSongsNotifier,
+                  builder: (context, downloadedSongs, _) {
+                    return LibraryActionItem(
+                      icon: Icons.download_done_rounded,
+                      title: 'Downloaded Songs',
+                      subtitle: '${downloadedSongs.length} bài hát',
+                      onTap: () {
+                        AppNavigator.push(
+                          context,
+                          const DownloadedSongsScreen(),
+                        );
+                      },
+                    );
+                  },
+                ),
           
                 const SizedBox(height: 24),
           
@@ -116,10 +141,13 @@ class _LibraryPageState extends State<LibraryScreen> {
         return const AlbumsList();
 
       case 4:
+        return const DownloadedSongsList();
+
+      case 5:
         return const AlbumsList();
 
       default:
-        return const AlbumsList();
+        return const DownloadedSongsList();
     }
   }
 }

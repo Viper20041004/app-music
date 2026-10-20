@@ -1,22 +1,29 @@
+import 'package:app_music/core/storage/local_song_storage.dart';
 import 'package:app_music/features/main_page/library/data/song_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 void showSongOptionsMenu(BuildContext context, SongModel song) {
+  final scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => SongOptionsBottomSheet(song: song),
+    builder: (context) => SongOptionsBottomSheet(
+      song: song,
+      scaffoldMessenger: scaffoldMessenger,
+    ),
   );
 }
 
 class SongOptionsBottomSheet extends StatefulWidget {
   final SongModel song;
+  final ScaffoldMessengerState? scaffoldMessenger;
 
   const SongOptionsBottomSheet({
     super.key,
     required this.song,
+    this.scaffoldMessenger,
   });
 
   @override
@@ -68,6 +75,7 @@ class _SongOptionsBottomSheetState extends State<SongOptionsBottomSheet> {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    Color? iconColor,
   }) {
     return InkWell(
       onTap: () {
@@ -80,15 +88,15 @@ class _SongOptionsBottomSheetState extends State<SongOptionsBottomSheet> {
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: iconColor ?? Colors.white,
               size: 24,
             ),
             const SizedBox(width: 20),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: iconColor ?? Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -226,10 +234,62 @@ class _SongOptionsBottomSheetState extends State<SongOptionsBottomSheet> {
                       title: 'Show Credits',
                       onTap: () => debugPrint('Show Credits'),
                     ),
-                    _buildMenuItem(
-                      icon: Icons.download_outlined,
-                      title: 'Download',
-                      onTap: () => debugPrint('Download'),
+                    ValueListenableBuilder<List<SongModel>>(
+                      valueListenable:
+                          LocalSongStorage.instance.downloadedSongsNotifier,
+                      builder: (context, downloadedSongs, child) {
+                        final isDownloaded =
+                            LocalSongStorage.instance.isDownloaded(widget.song);
+                        return _buildMenuItem(
+                          icon: isDownloaded
+                              ? Icons.download_done_rounded
+                              : Icons.download_outlined,
+                          title: isDownloaded
+                              ? 'Remove from Downloads'
+                              : 'Download',
+                          iconColor:
+                              isDownloaded ? const Color(0xFF00AFC4) : null,
+                          onTap: () async {
+                            final messenger = widget.scaffoldMessenger ??
+                                ScaffoldMessenger.maybeOf(context);
+                            if (isDownloaded) {
+                              await LocalSongStorage.instance
+                                  .removeSong(widget.song);
+                              messenger?.showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Đã xóa "${widget.song.title}" khỏi danh sách tải về'),
+                                  backgroundColor: const Color(0xFF1B1F24),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            } else {
+                              messenger?.showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Đang tải bài hát "${widget.song.title}"...'),
+                                  backgroundColor: const Color(0xFF1B1F24),
+                                  duration: const Duration(seconds: 1),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                              final success = await LocalSongStorage.instance
+                                  .downloadSong(widget.song);
+                              messenger?.showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    success
+                                        ? 'Đã tải xong "${widget.song.title}" vào Library!'
+                                        : 'Đã lưu "${widget.song.title}" vào Library!',
+                                  ),
+                                  backgroundColor: const Color(0xFF00AFC4),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      },
                     ),
                     _buildMenuItem(
                       icon: Icons.share_outlined,

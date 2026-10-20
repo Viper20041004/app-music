@@ -14,6 +14,7 @@ class SongModel {
   final int? duration;
   final bool isFavorite;
   final String? createdAt;
+  final String? localFilePath;
 
   const SongModel({
     this.id,
@@ -28,6 +29,7 @@ class SongModel {
     this.duration,
     this.isFavorite = false,
     this.createdAt,
+    this.localFilePath,
   });
 
   factory SongModel.fromJson(Map<String, dynamic> json, {String? baseUrl}) {
@@ -87,6 +89,7 @@ class SongModel {
       duration: json['duration'] is int ? json['duration'] as int : int.tryParse(json['duration']?.toString() ?? ''),
       isFavorite: json['is_favorite'] == 1 || json['is_favorite'] == true || json['isFavorite'] == true,
       createdAt: json['createdAt']?.toString() ?? json['created_at']?.toString(),
+      localFilePath: json['localFilePath']?.toString() ?? json['local_file_path']?.toString(),
     );
   }
 
@@ -104,6 +107,7 @@ class SongModel {
       'duration': duration,
       'is_favorite': isFavorite ? 1 : 0,
       'created_at': createdAt ?? DateTime.now().toIso8601String(),
+      'local_file_path': localFilePath,
     };
   }
 
@@ -121,6 +125,7 @@ class SongModel {
       duration: map['duration'] as int?,
       isFavorite: (map['is_favorite'] as int? ?? 0) == 1,
       createdAt: map['created_at'] as String?,
+      localFilePath: map['local_file_path'] as String?,
     );
   }
 
@@ -137,6 +142,7 @@ class SongModel {
     int? duration,
     bool? isFavorite,
     String? createdAt,
+    String? localFilePath,
   }) {
     return SongModel(
       id: id ?? this.id,
@@ -151,6 +157,18 @@ class SongModel {
       duration: duration ?? this.duration,
       isFavorite: isFavorite ?? this.isFavorite,
       createdAt: createdAt ?? this.createdAt,
+      localFilePath: localFilePath ?? this.localFilePath,
     );
+  }
+
+  bool matches(SongModel other) {
+    if (serverId != null && other.serverId != null && serverId == other.serverId) {
+      return true;
+    }
+    if (id != null && other.id != null && id == other.id) {
+      return true;
+    }
+    return title.trim().toLowerCase() == other.title.trim().toLowerCase() &&
+        artist.trim().toLowerCase() == other.artist.trim().toLowerCase();
   }
 }

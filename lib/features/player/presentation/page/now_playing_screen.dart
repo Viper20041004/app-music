@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:app_music/core/storage/local_song_storage.dart';
 import 'package:app_music/features/main_page/library/data/song_model.dart';
 import 'package:app_music/features/player/presentation/widget/song_options_bottom_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -201,9 +203,14 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
 
       await _audioPlayer.setSpeed(1.0);
 
-      if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
+      final localPath = widget.song.localFilePath;
+      if (localPath != null && localPath.isNotEmpty && File(localPath).existsSync()) {
+        await _audioPlayer.setFilePath(localPath);
+      } else if (audioUrl.startsWith('http://') || audioUrl.startsWith('https://')) {
         await _audioPlayer.setUrl(audioUrl);
-      } else {
+      } else if (File(audioUrl).existsSync() || audioUrl.startsWith('/') || audioUrl.contains(':\\')) {
+        await _audioPlayer.setFilePath(audioUrl);
+      } else if (audioUrl.isNotEmpty) {
         await _audioPlayer.setAsset(audioUrl);
       }
       await _audioPlayer.play();
@@ -640,16 +647,77 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                       const SizedBox(height: 16),
 
                       // Download Button Icon
-                      // Center(
-                      //   child: IconButton(
-                      //     icon: const Icon(
-                      //       Icons.download_for_offline_outlined,
-                      //       color: Colors.white54,
-                      //       size: 24,
-                      //     ),
-                      //     onPressed: () {},
-                      //   ),
-                      // ),
+                      ValueListenableBuilder<List<SongModel>>(
+                        valueListenable:
+                            LocalSongStorage.instance.downloadedSongsNotifier,
+                        builder: (context, downloadedSongs, child) {
+                          final isDownloaded = LocalSongStorage.instance
+                              .isDownloaded(widget.song);
+                          return Center(
+                            child: IconButton(
+                              icon: Icon(
+                                isDownloaded
+                                    ? Icons.download_done_rounded
+                                    : Icons.download_for_offline_outlined,
+                                color: isDownloaded
+                                    ? const Color(0xFF00AFC4)
+                                    : Colors.white54,
+                                size: 28,
+                              ),
+                              tooltip: isDownloaded
+                                  ? 'Đã tải về (Nhấn để xóa)'
+                                  : 'Tải bài hát về máy',
+                              onPressed: () async {
+                                if (isDownloaded) {
+                                  await LocalSongStorage.instance
+                                      .removeSong(widget.song);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Đã xóa "${widget.song.title}" khỏi thư viện tải về'),
+                                        backgroundColor:
+                                            const Color(0xFF1B1F24),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Đang tải bài hát "${widget.song.title}"...'),
+                                        backgroundColor:
+                                            const Color(0xFF1B1F24),
+                                        duration: const Duration(seconds: 1),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                  final success = await LocalSongStorage
+                                      .instance
+                                      .downloadSong(widget.song);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          success
+                                              ? 'Đã tải xong "${widget.song.title}" vào Library!'
+                                              : 'Đã lưu "${widget.song.title}" vào Library!',
+                                        ),
+                                        backgroundColor:
+                                            const Color(0xFF00AFC4),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          );
+                        },
+                      ),
 
                       const SizedBox(height: 24),
 
